@@ -39,8 +39,9 @@ wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericclou
 ### 3. Clone this repository
 
 ```console
-git clone https://github.com/dmi3mis/terraform-libvirt-example
-cd libvirt-terraform-example
+git clone https://github.com/dmi3mis/terraform-examples
+cd terraform-examples/create-vm-libvirt
+
 ```
 
 ### 4. Generate ssh key and apply this config
