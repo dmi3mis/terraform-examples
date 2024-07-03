@@ -7,13 +7,25 @@ tested on Debian cloud image
 ```console
 sudo apt upgrade
 egrep -c '(vmx|svm)' /proc/cpuinfo
-sudo apt install -y qemu-kvm libvirt-daemon-system virtinst libvirt-clients bridge-utils
+sudo apt install -y qemu-kvm libvirt-daemon-system virtinst libvirt-clients bridge-utils virt-manager
 sudo systemctl enable --now libvirtd
 sudo systemctl status libvirtd
 sudo usermod -aG kvm $USER
 sudo usermod -aG libvirt $USER
-
 ```
+## install mkisofs utility.
+
+```console
+sudo apt install -y mkisofs
+```
+
+## start "default" virtual nerwork
+
+```console
+sudo virsh net-start default
+sudo virsh net-autostart default
+```
+
 ### 1. create/define libvirt vm pool storage
 
 ```console
