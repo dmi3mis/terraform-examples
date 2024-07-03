@@ -39,7 +39,8 @@ virsh pool-start pool
 Uncomment pool block in main.tf and change os_image_debian.source download link if you want to create pool and download qcow2 image automatticaly
 
 ### 2. Download debian qcow2 cloud image
-# Note: you can comment 14 line and uncomment 15 line 'source = "/home/pool/debian-12-genericcloud-amd64.qcow2"' and skip this step
+Note: you can comment 14 line and uncomment 15 line 'source = "/home/pool/debian-12-genericcloud-amd64.qcow2"' and skip this step
+
 ```console
 cd /home/pool/
 wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
