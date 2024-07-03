@@ -1,10 +1,11 @@
 variable "domain"   { default = "example.local" }
 variable "hostname"   { default = "debian" }
 
-#resource "libvirt_pool" "pool" {
-#  type = "dir"
-#  path = "/home/pool"
-#}
+resource "libvirt_pool" "pool" {
+  name = "pool"
+  type = "dir"
+  path = "/home/pool"
+}
 
 # We fetch the latest ubuntu release image from their mirrors
 resource "libvirt_volume" "os_image_debian" {
