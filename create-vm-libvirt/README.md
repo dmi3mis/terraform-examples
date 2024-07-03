@@ -49,6 +49,7 @@ wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericclou
 ### 3. Clone this repository
 
 ```console
+cd ~
 git clone https://github.com/dmi3mis/terraform-examples
 cd terraform-examples/create-vm-libvirt
 
