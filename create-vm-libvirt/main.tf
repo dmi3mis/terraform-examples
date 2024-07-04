@@ -7,13 +7,24 @@ resource "libvirt_pool" "pool" {
   path = "/home/pool"
 }
 
+resource "libvirt_network" "nat1" {
+    name      = "nat1"
+    mode      = "nat"
+    addresses = ["192.168.123.0/24"]
+
+    dhcp {
+      enabled = true
+    }
+}
+
 # We fetch the latest ubuntu release image from their mirrors
 resource "libvirt_volume" "os_image_debian" {
   name   = "os_image_debian"
   pool   = "pool"
-  # source = https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
-  source = "/home/pool/debian-12-genericcloud-amd64.qcow2"
+  source = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
+  # source = "/home/pool/debian-12-genericcloud-amd64.qcow2"
   format = "qcow2"
+  depends_on = [libvirt_pool.pool]
 }
 
 resource "libvirt_volume" "os_volume_resized" {
@@ -22,6 +33,7 @@ resource "libvirt_volume" "os_volume_resized" {
   pool           = "pool"
   # size 50GB in bytes
   size           = 53687091200
+  depends_on = [libvirt_pool.pool]
 }
 
 data "template_file" "user_data" {
@@ -47,6 +59,7 @@ resource "libvirt_cloudinit_disk" "cloudinit_with_resize" {
   user_data      = data.template_file.user_data.rendered
   network_config = data.template_file.network_config.rendered
   pool           = libvirt_volume.os_volume_resized.pool
+  depends_on = [libvirt_pool.pool]
 }
 
 # Create the machine
@@ -58,16 +71,27 @@ resource "libvirt_domain" "debian" {
   cloudinit = libvirt_cloudinit_disk.cloudinit_with_resize.id
 
   network_interface {
-   # network_id     = libvirt_network.net1.id
-    network_name   = "default"
-    wait_for_lease = true
-
-  }
+    network_id     = libvirt_network.nat1.id
+    addresses      = ["192.168.123.31"]
+  }    
+#  network_interface {
+#    network_id     = libvirt_network.default.id
+#    network_name   = "default"
+#    wait_for_lease = true
+#
+#  }
   
   disk {
     volume_id = libvirt_volume.os_volume_resized.id
   }
 
+  # Volumes physical files are not removed during destroy
+  # https://github.com/dmacvicar/terraform-provider-libvirt/issues/1000
+
+  # Failed to remove storage pool because of remnant actual volume
+  # https://github.com/dmacvicar/terraform-provider-libvirt/issues/1083
+
+  depends_on=[libvirt_volume.os_volume_resized]
   
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
   # we need to pass it
@@ -90,6 +114,7 @@ resource "libvirt_domain" "debian" {
     listen_type = "address"
     autoport    = true
   }
+
 }
 
 
