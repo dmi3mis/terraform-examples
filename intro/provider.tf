@@ -21,8 +21,8 @@ terraform {
 # https://console.cloud.yandex.ru/folders/<идентификатор_каталога>
 
 locals {
-  cloud_id  = "b1gon01d1naocfdcpc0b"
-  folder_id = "b1gtho3en7gbj3osce23"
+  cloud_id  = "changeme"
+  folder_id = "changeme"
 }
 
 provider "yandex" {
