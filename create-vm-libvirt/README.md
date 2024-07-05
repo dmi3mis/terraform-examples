@@ -45,8 +45,8 @@ Error: error creating libvirt domain: internal error: process exited while conne
 ```
 
 Issue is in apparmor rules that prevents qemu-kvm virtual machine to read and write in custom locations
-# https://gitlab.com/apparmor/apparmor/-/wikis/Libvirt
-# https://www.turek.dev/posts/add-custom-libvirt-apparmor-permissions/
+https://gitlab.com/apparmor/apparmor/-/wikis/Libvirt
+https://www.turek.dev/posts/add-custom-libvirt-apparmor-permissions/
 
 you can add Pool location to Apparmor allow rules
 
