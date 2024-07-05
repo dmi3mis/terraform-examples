@@ -74,6 +74,6 @@ Error: error creating libvirt domain: internal error: process exited while conne
 do this
 
 ```console
-sudo sh -c 'echo security_driver = "none" >> /etc/libvirt/qemu.conf'
+sudo sh -c 'echo security_driver = \"none\" >> /etc/libvirt/qemu.conf'
 systemctl restart libvirtd
 ```
