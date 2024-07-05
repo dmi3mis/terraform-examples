@@ -35,7 +35,7 @@ resource "yandex_compute_instance" "vm-1" {
     preemptible = true
   }
   metadata = {
-    ssh-keys = "ubuntu:${file("/changeme/id_rsa.pub")}"
+    ssh-keys = "ubuntu:${file("~/.ssh/id_ecdsa.pub")}"
   }
 
   # https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec
