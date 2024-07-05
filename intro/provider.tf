@@ -7,6 +7,19 @@ terraform {
   }
 }
 
+# Что такое cloud_id и как узнать свой cloud_id?
+# cloud_id это идентификатор каталога
+# https://yandex.cloud/ru/docs/resource-manager/operations/cloud/get-id
+# Перейдите в консоль управления и выберите нужное облако. 
+# На открывшейся странице идентификатор облака  указан сверху,
+# рядом с именем облака, а также на вкладке Обзор в строке Идентификатор.
+
+# Что такое folder_id и как узнать свой folder_id?
+# folder_id это идентификатор каталога
+# https://yandex.cloud/ru/docs/resource-manager/operations/folder/get-id
+# Получить идентификатор каталога можно из URL страницы каталога в консоли управления
+# https://console.cloud.yandex.ru/folders/<идентификатор_каталога>
+
 locals {
   cloud_id  = "b1gon01d1naocfdcpc0b"
   folder_id = "b1gtho3en7gbj3osce23"
