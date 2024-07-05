@@ -2,7 +2,7 @@
 
 tested on Debian cloud image
 
-## install qemu-kvm and libvirt on Ubuntu 22.04
+## 1. install qemu-kvm and libvirt on Ubuntu 22.04
 
 ```console
 sudo apt upgrade
@@ -13,40 +13,13 @@ sudo systemctl status libvirtd
 sudo usermod -aG kvm $USER
 sudo usermod -aG libvirt $USER
 ```
-## install mkisofs utility.
+## 2. install mkisofs utility.
 
 ```console
 sudo apt install -y mkisofs
 ```
 
-## start "default" virtual nerwork
-
-```console
-sudo virsh net-start default
-sudo virsh net-autostart default
-```
-
-### 1. create/define libvirt vm pool storage
-
-```console
-sudo mkdir -p /home/pool
-sudo chmod o+w /home/pool
-virsh pool-define-as pool --type dir --target /home/pool
-virsh pool-autostart pool
-virsh pool-start pool
-```
-
-Uncomment pool block in main.tf and change os_image_debian.source download link if you want to create pool and download qcow2 image automatticaly
-
-### 2. Download debian qcow2 cloud image
-Note: you can comment 14 line and uncomment 15 line 'source = "/home/pool/debian-12-genericcloud-amd64.qcow2"' and skip this step
-
-```console
-cd /home/pool/
-wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
-```
-
-### 3. Clone this repository
+## 3. Clone this repository
 
 ```console
 cd ~
@@ -55,7 +28,7 @@ cd terraform-examples/create-vm-libvirt
 
 ```
 
-### 4. Generate ssh key and apply this config
+## 4. Generate ssh key and apply this config
 
 ```console
 ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa
@@ -71,7 +44,17 @@ note: if you are see error like this
 Error: error creating libvirt domain: internal error: process exited while connecting  to monitor: 2024-03-27T11:36:23.167320Z qemu-system-x86_64: -blockdev {"driver":"file",> "filename":"/home/pool/os_image_debian","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}: Could not open '/home/pool/os_image_debian': Permission denied
 ```
 
-do this
+Issue is in apparmor rules that prevents qemu-kvm virtual machine to read and write in custom locations
+# https://gitlab.com/apparmor/apparmor/-/wikis/Libvirt
+# https://www.turek.dev/posts/add-custom-libvirt-apparmor-permissions/
+
+you can add Pool location to Apparmor allow rules
+
+```console
+sudo sh -c 'echo /home/pool/\* rwk, >> /etc/apparmor.d/abstractions/libvirt-qemu'
+systemctl restart libvirtd
+```
+or you can disable Apparmor security on libvirtd
 
 ```console
 sudo sh -c 'echo security_driver = \"none\" >> /etc/libvirt/qemu.conf'
