@@ -30,8 +30,9 @@ terraform {
 }
 # terraform init -backend-config="access_key=$ACCESS_KEY" -backend-config="secret_key=$SECRET_KEY"
 
-# Что такое folder_id и как узнать свой cloud_id?
-# folder_id это идентификатор каталога
+
+# Что такое cloud_id и как узнать свой cloud_id?
+# cloud_id это идентификатор каталога
 # https://yandex.cloud/ru/docs/resource-manager/operations/cloud/get-id
 # Перейдите в консоль управления и выберите нужное облако. 
 # На открывшейся странице идентификатор облака  указан сверху,
