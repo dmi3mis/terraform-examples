@@ -72,14 +72,15 @@ resource "libvirt_domain" "debian" {
 
   network_interface {
     network_id     = libvirt_network.nat1.id
-    addresses      = ["192.168.123.31"]
+#    addresses      = ["192.168.123.31"]
+    wait_for_lease = true
   }    
 #  network_interface {
-#    network_id     = libvirt_network.default.id
-#    network_name   = "default"
-#    wait_for_lease = true
+#  network_id     = libvirt_network.default.id
+#  network_name   = "default"
+#  wait_for_lease = true
 #
-#  }
+#}
   
   disk {
     volume_id = libvirt_volume.os_volume_resized.id
