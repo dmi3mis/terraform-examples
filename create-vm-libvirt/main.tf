@@ -1,10 +1,7 @@
-variable "domain"   { default = "example.local" }
-variable "hostname"   { default = "debian" }
-
-resource "libvirt_pool" "pool" {
-  name = "pool"
+resource "libvirt_pool" "volpool" {
+  name = "web-pool"
   type = "dir"
-  path = "/home/pool"
+  path = "/var/lib/libvirt/images/web-vms/"
 }
 
 resource "libvirt_network" "nat1" {
@@ -18,61 +15,83 @@ resource "libvirt_network" "nat1" {
 }
 
 # We fetch the latest ubuntu release image from their mirrors
-resource "libvirt_volume" "os_image_debian" {
-  name   = "os_image_debian"
-  pool   = "pool"
-  source = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
-  # source = "/home/pool/debian-12-genericcloud-amd64.qcow2"
-  format = "qcow2"
-  depends_on = [libvirt_pool.pool]
+resource "libvirt_volume" "base" {
+  name           = "debian-12-genericcloud-amd64.qcow2"
+  pool           = libvirt_pool.volpool.name
+  source         = var.base_image
+  format         = "qcow2"
+  depends_on     = [libvirt_pool.volpool]
 }
 
-resource "libvirt_volume" "os_volume_resized" {
-  name           = "os_volume_resized"
-  base_volume_id = libvirt_volume.os_image_debian.id
-  pool           = "pool"
-  # size 50GB in bytes
-  size           = 53687091200
-  depends_on = [libvirt_pool.pool]
-}
-
-data "template_file" "user_data" {
-  template       = file("${path.module}/cloud_init.cfg")
-  
-    vars = {
-    domain   = var.domain
-    hostname = var.hostname
-    fqdn     = join(".", [var.hostname, var.domain])
-    }
-}
-
-data "template_file" "network_config" {
-  template = file("${path.module}/network_config.cfg")
+resource "libvirt_volume" "web_disk" {
+  count          = var.vm_count
+  name           = "web-${count.index + 1}-disk.qcow2"
+  base_volume_id = libvirt_volume.base.id
+  pool           = libvirt_pool.volpool.name
+  size           = var.vm_disk_size
+  depends_on     = [libvirt_pool.volpool]
 }
 
 # for more info about paramater check this out
 # https://github.com/dmacvicar/terraform-provider-libvirt/blob/master/website/docs/r/cloudinit.html.markdown
 # Use CloudInit to add our ssh-key to the instance
 # you can add also meta_data field
-resource "libvirt_cloudinit_disk" "cloudinit_with_resize" {
-  name           = "commoninit_resized.iso"
-  user_data      = data.template_file.user_data.rendered
-  network_config = data.template_file.network_config.rendered
-  pool           = libvirt_volume.os_volume_resized.pool
-  depends_on = [libvirt_pool.pool]
+resource "libvirt_cloudinit_disk" "cloudinit" {
+  count     = var.vm_count
+  name      = "web-${count.index + 1}-cloudinit.iso"
+  pool      = libvirt_pool.volpool.name
+  user_data      = <<-EOF
+    #cloud-config
+    disable_root: 1
+    hostname: web-${count.index + 1}
+    ssh_pwauth: 0
+    users:
+      - name: kadm
+        gecos: K adm
+        homedir: /home/kadm
+        groups: users, sudo
+        shell: /bin/bash
+        sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+        ssh_import_id:
+          - gh:dmi3mis
+        ssh-authorized-keys:
+          - ${file("~/.ssh/id_ecdsa.pub")}
+    package_update: true
+    packages:
+      - nginx
+      - git
+    runcmd:
+      - [ systemctl, enable, --now, nginx ]
+      - [ sh, -c, "echo Hello on $(hostname) > /var/www/html/index.nginx-debian.html" ]
+    growpart:
+      mode: auto
+      devices: ['/']
+  EOF
+
+  network_config = <<-EOF
+    #network-config
+    version: 2
+    ethernets:
+      ens3:
+        dhcp4: true
+        nameservers:
+          search: [ ${var.domain} ]
+          addresses: [8.8.8.8, 8.8.4.4]
+  EOF
+  depends_on = [libvirt_pool.volpool]
 }
 
 # Create the machine
-resource "libvirt_domain" "debian" {
-  name   = "debian"
-  memory = "2048"
-  vcpu   = 1
+resource "libvirt_domain" "web_vm" {
+  count  = var.vm_count
+  name   = "web-${count.index + 1}"
+  memory = var.vm_memory
+  vcpu   = var.vm_vcpus
   autostart = true
-  cloudinit = libvirt_cloudinit_disk.cloudinit_with_resize.id
+  cloudinit = libvirt_cloudinit_disk.cloudinit[count.index].id
 
   network_interface {
     network_id     = libvirt_network.nat1.id
-#    addresses      = ["192.168.123.31"]
     wait_for_lease = true
   }    
 #  network_interface {
@@ -83,7 +102,7 @@ resource "libvirt_domain" "debian" {
 #}
   
   disk {
-    volume_id = libvirt_volume.os_volume_resized.id
+    volume_id = libvirt_volume.web_disk[count.index].id
   }
 
   # Volumes physical files are not removed during destroy
@@ -92,7 +111,7 @@ resource "libvirt_domain" "debian" {
   # Failed to remove storage pool because of remnant actual volume
   # https://github.com/dmacvicar/terraform-provider-libvirt/issues/1083
 
-  depends_on=[libvirt_volume.os_volume_resized]
+  depends_on=[libvirt_volume.web_disk]
   
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
   # we need to pass it
@@ -119,7 +138,16 @@ resource "libvirt_domain" "debian" {
 }
 
 
-# IPs: use wait_for_lease true or after creation use terraform refresh and terraform show for the ips of domain
-output "ip" {
-  value = libvirt_domain.debian.network_interface[0].addresses[0]
+# Вывод IP адресов созданных машин
+output "vm_ips" {
+  value = {
+    for vm in libvirt_domain.web_vm :
+    vm.name => vm.network_interface[0].addresses[0]
+  }
+  description = "IP адреса созданных виртуальных машин"
+}
+
+output "vm_names" {
+  value = [for vm in libvirt_domain.web_vm : vm.name]
+  description = "Имена созданных виртуальных машин"
 }

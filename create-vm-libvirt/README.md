@@ -52,11 +52,11 @@ you can add Pool location to Apparmor allow rules
 
 ```console
 sudo sh -c 'echo /home/pool/\* rwk, >> /etc/apparmor.d/abstractions/libvirt-qemu'
-systemctl restart libvirtd
+sudo systemctl restart libvirtd
 ```
 or you can disable Apparmor security on libvirtd
 
 ```console
 sudo sh -c 'echo security_driver = \"none\" >> /etc/libvirt/qemu.conf'
-systemctl restart libvirtd
+sudo systemctl restart libvirtd
 ```
