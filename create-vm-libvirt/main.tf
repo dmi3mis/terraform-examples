@@ -1,3 +1,4 @@
+
 resource "libvirt_pool" "volpool" {
   name = "web-pool"
   type = "dir"
