@@ -11,15 +11,15 @@ terraform {
 resource "libvirt_volume" "vm_disk" {
   name           = "${var.vm_name}-disk.qcow2"
   format         = "qcow2"
-  pool           = var.pool_name
+  pool      = var.pool_name
   base_volume_id = var.base_image
   size           = var.disk_size
 }
 
 resource "libvirt_cloudinit_disk" "cloudinit" {
-  name           = "${var.vm_name}-cloudinit.iso"
-  pool           = var.pool_name
-  user_data      = <<-EOF
+  name      = "${var.vm_name}-cloudinit.iso"
+  pool      = var.pool_name
+  user_data = <<-EOF
     #cloud-config
     fqdn: "${var.vm_name}.${var.vm_domain}"
     hostname: ${var.vm_name}
@@ -53,18 +53,18 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
 }
 
 resource "libvirt_domain" "vm" {
-  name        = var.vm_name
-  memory      = var.memory
-  vcpu        = var.vcpus
-  autostart   = true
-  cloudinit   = libvirt_cloudinit_disk.cloudinit.id
+  name   = var.vm_name
+  memory = var.memory
+  vcpu   = var.vcpus
+  autostart = true
+  cloudinit = libvirt_cloudinit_disk.cloudinit.id
 
   disk {
     volume_id = libvirt_volume.vm_disk.id
   }
-  depends_on  = [libvirt_volume.vm_disk]
+  depends_on=[libvirt_volume.vm_disk]
   network_interface {
-    network_name   = var.network_name
+    network_name = var.network_name
     addresses      = var.vm_ipaddresses
     mac            = var.vm_macaddress
     wait_for_lease = true

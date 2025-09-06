@@ -10,3 +10,5 @@ terraform-provider-libvirt
 .terraform
 .terraform*
 id*
+.terragrunt-cache
+**/.terragrunt-cache/
