@@ -12,6 +12,12 @@ variable "vm_macaddress" {
   description = "Network interface MAC address"
   type        = string
 }
+variable "password" {
+  description = "password"
+  type        = string
+  sensitive   = true
+}
+
 
 variable "vcpus" {
   description = "Количество vCPU"

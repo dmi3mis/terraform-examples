@@ -31,7 +31,7 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
           - gh:dmi3mis
         ssh-authorized-keys:
           - ${var.ssh_public_key}
-        plain_text_passwd: 'ubuntu'
+        plain_text_passwd: ${var.password}
         sudo: ['ALL=(ALL) NOPASSWD:ALL']
         groups: sudo
         shell: /bin/bash

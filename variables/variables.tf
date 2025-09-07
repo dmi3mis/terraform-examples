@@ -4,21 +4,28 @@
 variable "hello" {
   type        = string
   default     = "Hello world"
-  description = "this is a helloworld striung variable"
+  description = "variable with string type"
+}
+
+variable "files" {
+  description = "List of files to create"
+  type        = list(string)
+  default     = ["file1.test", "file2.test", "file3.test"]
 }
 
 # Число
 variable "num" {
   type        = number
-  default     = 123
-  description = "this is a 123 number variable"
+  default     = 1
+  description = "number type variable"
 }
 
 variable "size" {
   type        = number
   default     = 10
-  description = "this is a size variable"
+  description = "this is size variable "
 }
+
 # Список
 variable "list" {
   type        = list(any)
@@ -35,7 +42,7 @@ variable "map" {
   description = "this is a example of map variable"
 }
 # Объект с различными типами данных
-variable "object_var" {
+variable "object" {
   description = "example of structural type object"
   type = object({
     name    = string
@@ -52,19 +59,18 @@ variable "object_var" {
 }
 
 # Объект список хеш таблиц
-variable "object_var" {
-  description = "example of list of map"
+variable "list-maps-string" {
+  description = "list of different types of var"
   type = list(
     object({
-      var1 = string,
-      var2 = string,
-      var3 = string,
+      name = string,
+      age  = string,
+      tags = string,
     })
   )
-  default = {
+  default = [{
     name    = "test1"
-    age     = 42
-    tags    = ["a", "b", "c"]
-    enabled = false
-  }
+    age     = "42"
+    tags    = "tag1"
+  }]
 }

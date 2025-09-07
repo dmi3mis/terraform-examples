@@ -40,6 +40,7 @@ module "vms" {
   vm_name     = each.key
   vcpus       = each.value.vcpus
   memory      = each.value.memory
+  password = each.value.password
   vm_ipaddresses = each.value.ipaddresses
   vm_macaddress = each.value.macaddress
   base_image  = libvirt_volume.base.id
