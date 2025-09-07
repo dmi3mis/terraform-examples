@@ -68,7 +68,7 @@ resource "libvirt_domain" "vm" {
   vcpu   = var.vcpus
   autostart = true
   cloudinit = libvirt_cloudinit_disk.cloudinit.id
-
+  running   = false
   disk {
     volume_id = libvirt_volume.vm_disk.id
   }
