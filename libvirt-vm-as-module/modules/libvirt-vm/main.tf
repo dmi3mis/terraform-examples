@@ -21,8 +21,9 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
   pool           = var.pool_name
   user_data      = <<-EOF
     #cloud-config
-    fqdn: "${var.vm_name}.${var.vm_domain}"
-    hostname: ${var.vm_name}
+    fqdn: ${var.vm_name}
+    prefer_fqdn_over_hostname: true
+    create_hostname_file: true
     prefer_fqdn_over_hostname: true
     create_hostname_file: true
     users:

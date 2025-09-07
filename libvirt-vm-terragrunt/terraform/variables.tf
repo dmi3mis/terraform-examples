@@ -13,9 +13,9 @@ variable "vms_config" {
     macaddress = string
   }))
   default = {
-    "host1" = { vcpus = 2, memory = 2048, ipaddresses = ["192.168.123.10"], macaddress = "52:54:00:00:00:10" }
-    "fs1" =   { vcpus = 4, memory = 4096, ipaddresses = ["192.168.123.11"], macaddress = "52:54:00:00:00:11" }
-    "web1" =  { vcpus = 1, memory = 1024, ipaddresses = ["192.168.123.12"], macaddress = "52:54:00:00:00:12" }
+    "host1.company.com" = { vcpus = 2, memory = 2048, ipaddresses = ["192.168.123.10"], macaddress = "52:54:00:00:00:10" }
+    #"fs1.company.com" =   { vcpus = 4, memory = 4096, ipaddresses = ["192.168.123.11"], macaddress = "52:54:00:00:00:11" }
+    #"web1.company.com" =  { vcpus = 1, memory = 1024, ipaddresses = ["192.168.123.12"], macaddress = "52:54:00:00:00:12" }
   }
 }
 

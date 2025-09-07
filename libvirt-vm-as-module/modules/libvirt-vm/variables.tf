@@ -3,11 +3,11 @@ variable "vm_name" {
   type        = string
 }
 
-variable "vm_domain" {
-  description = "machine domain"
-  type        = string
-  default     = "example.com"
-}
+#variable "vm_domain" {
+#  description = "machine domain"
+#  type        = string
+#  default     = "example.com"
+#}
 
 variable "vm_ipaddresses" {
   description = "Network interface IP address"

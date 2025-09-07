@@ -15,7 +15,7 @@ resource "libvirt_pool" "vmspool" {
 
 # Объем для базового образа
 resource "libvirt_volume" "base" {
-  name   = "base-image"
+  name   = "base-image.qcow2"
   pool   = libvirt_pool.vmspool.name
   source = var.base_image_path
   format = "qcow2"
@@ -25,6 +25,7 @@ resource "libvirt_network" "network" {
     name      = var.network_name
     mode      = "nat"
     addresses = var.network_range
+    autostart = true
     dhcp {
       enabled = false
     }
@@ -37,7 +38,6 @@ module "vms" {
 
   source      = "./modules/libvirt-vm"
   vm_name     = each.key
-  vm_domain   = "${var.environment}-domain.com"
   vcpus       = each.value.vcpus
   memory      = each.value.memory
   vm_ipaddresses = each.value.ipaddresses

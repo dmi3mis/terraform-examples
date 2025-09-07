@@ -13,9 +13,9 @@ inputs = {
   libvirt_uri  = "qemu:///system"
 
   vms_config   = {
-    "host1-prod" = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.10"], macaddress = "52:54:00:00:02:10" }
-    "fs1-prod"   = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.11"], macaddress = "52:54:00:00:02:11" }
-    "web1-prod"  = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.12"], macaddress = "52:54:00:00:02:12" }
+    "host1-prod.company.com" = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.10"], macaddress = "52:54:00:00:02:10" }
+    "fs1-prod.company.com"   = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.11"], macaddress = "52:54:00:00:02:11" }
+    "web1-prod.company.com"  = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.102.12"], macaddress = "52:54:00:00:02:12" }
   }
   
   pool_name       = "prod"

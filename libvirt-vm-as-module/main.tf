@@ -15,7 +15,7 @@ resource "libvirt_pool" "vmspool" {
 
 # Объем для базового образа
 resource "libvirt_volume" "base" {
-  name   = "base-image"
+  name   = "base-image.qcow2"
   pool   = libvirt_pool.vmspool.name
   source = var.base_image_path
   format = "qcow2"

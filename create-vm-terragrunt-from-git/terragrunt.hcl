@@ -9,9 +9,9 @@ inputs = {
   libvirt_uri  = "qemu:///system"
 
   vms_config   = {
-    "alse-fromgit"  = { vcpus = 2, memory = 4096, ipaddresses = ["192.168.105.10"], macaddress = "52:54:00:00:05:10" }
-    # "fs1-fromgit"    = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.105.11"], macaddress = "52:54:00:00:05:11" }
-    # "web1-fromgit"   = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.105.12"], macaddress = "52:54:00:00:05:12" }
+    "alse183.astralinux.test"  = { vcpus = 2, memory = 4096, ipaddresses = ["192.168.105.10"], macaddress = "52:54:00:00:05:10" }
+    #"fs1-fromgit.astralinux.test"    = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.105.11"], macaddress = "52:54:00:00:05:11" }
+    # "web1-fromgit.astralinux.test"   = { vcpus = 1, memory = 1024, ipaddresses = ["192.168.105.12"], macaddress = "52:54:00:00:05:12" }
   }
 
   pool_name       = "fromgit"

@@ -21,10 +21,10 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
   pool      = var.pool_name
   user_data = <<-EOF
     #cloud-config
-    fqdn: "${var.vm_name}.${var.vm_domain}"
-    hostname: ${var.vm_name}
+    fqdn: ${var.vm_name}
     prefer_fqdn_over_hostname: true
     create_hostname_file: true
+    manage_etc_hosts: false
     users:
       - name: ubuntu
         ssh_import_id:
@@ -38,9 +38,18 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
         lock_passwd: false
     packages:
       - nginx
+    write_files:
+      - path: /run/set-hostname.sh
+        content: |
+          #!/bin/bash
+          echo 127.0.0.1 localhost.localdomain localhost > /etc/hosts
+          echo ${var.vm_ipaddresses[0]} $(hostname --fqdn) $(hostname -s) >> /etc/hosts
+          echo ff02::1 ip6-allnodes >> /etc/hosts
+          echo ff02::2 ip6-allrouters >> /etc/hosts
+        permissions: '0755'
     runcmd:
-      - systemctl enable nginx
-      - systemctl start nginx
+      - systemctl enable --now nginx
+      - [ sudo, /usr/bin/bash, /run/set-hostname.sh ]
   EOF
   network_config = <<-EOF
     #network-config
@@ -49,7 +58,6 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
       ens3:
         dhcp4: true
         nameservers:
-          search: [ ${var.vm_domain} ]
           addresses: [8.8.8.8, 8.8.4.4]
   EOF
 }
