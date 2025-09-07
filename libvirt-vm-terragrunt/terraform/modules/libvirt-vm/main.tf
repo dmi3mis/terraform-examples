@@ -31,9 +31,11 @@ resource "libvirt_cloudinit_disk" "cloudinit" {
           - gh:dmi3mis
         ssh-authorized-keys:
           - ${var.ssh_public_key}
+        plain_text_passwd: 'ubuntu'
         sudo: ['ALL=(ALL) NOPASSWD:ALL']
         groups: sudo
         shell: /bin/bash
+        lock_passwd: false
     packages:
       - nginx
     runcmd:
@@ -84,10 +86,21 @@ resource "libvirt_domain" "vm" {
     target_type = "virtio"
     target_port = "1"
   }
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
+
+  graphics { 
+      type       = "vnc"
+      listen_type = "address"
+      autoport = true
+      listen_address = "0.0.0.0"
+      websocket = -1 
+  }
+
+  video {
+    type = "qxl"
+  }
+  
+  cpu {
+    mode = "host-passthrough"
   }
 
 }

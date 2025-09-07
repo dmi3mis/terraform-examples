@@ -10,6 +10,7 @@ output "virtual_machines" {
       id   = vm_module.vm_id
       name = vm_module.vm_name
       ip   = vm_module.vm_ip
+      # all   = vm_module
     }
   }
 }

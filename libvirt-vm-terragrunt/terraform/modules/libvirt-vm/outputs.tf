@@ -3,6 +3,11 @@ output "vm_id" {
   value       = libvirt_domain.vm.id
 }
 
+# output "vm" {
+#  description = " Виртуальная машина со всеми свойствами"
+#  value       = try(libvirt_domain.vm, null)
+# }
+
 output "vm_name" {
   description = "Имя виртуальной машины"
   value       = libvirt_domain.vm.name
@@ -17,3 +22,4 @@ output "disk_id" {
   description = "ID диска виртуальной машины"
   value       = libvirt_volume.vm_disk.id
 }
+
